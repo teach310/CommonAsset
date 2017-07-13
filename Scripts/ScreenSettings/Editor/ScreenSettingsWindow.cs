@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+﻿﻿using UnityEditor;
 using UnityEngine;
 using UnityEditor.IMGUI.Controls;
 
@@ -13,23 +13,25 @@ public class ScreenSettingsWindow : EditorWindow
 
     ScreenSettings settings;
 
-
     TreeViewState state;
     ScreenTreeView treeView;
     SearchField searchField;
 
+
+    void OnSelectionChange()
+    {
+        var treeAsset = Selection.activeObject as ScreenSettings;
+        if (treeAsset != null && treeAsset != settings)
+        {
+            settings = treeAsset;
+            InitTreeView();
+            Repaint();
+        }
+    }
+
     void OnEnable()
     {
         Undo.undoRedoPerformed += OnUndoRedoPerformed;
-
-
-        state = new TreeViewState();
-        treeView = new ScreenTreeView(state, ScreenSettingsLoader.Settings);
-        treeView.Reload();
-        // ScriptableObject取得
-
-        searchField = new SearchField();
-        searchField.downOrUpArrowKeyPressed += treeView.SetFocusAndEnsureSelectedItem;
     }
 
     private void OnDisable()
@@ -45,8 +47,28 @@ public class ScreenSettingsWindow : EditorWindow
             treeView.Reload();
         }
     }
+
+    void InitTreeView(){
+        if (settings == null)
+            return;
+
+		state = new TreeViewState();
+        treeView = new ScreenTreeView(state, settings);
+		treeView.Reload();
+		// ScriptableObject取得
+
+		searchField = new SearchField();
+		searchField.downOrUpArrowKeyPressed += treeView.SetFocusAndEnsureSelectedItem;
+    }
+
     void OnGUI()
     {
+        if (settings == null)
+        {
+            EditorGUILayout.LabelField("ScreenSettingsを選択してください");
+            return;
+        }
+
         GUILayout.Space(5f);
         ToolBar();
         GUILayout.Space(3f);

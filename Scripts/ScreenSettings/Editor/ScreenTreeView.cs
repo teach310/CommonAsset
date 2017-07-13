@@ -170,10 +170,9 @@ public class ScreenTreeView : TreeView
                 .Select(x => new ScreenEntity(x.id, windowItem.id, x.displayName))
             );
         }
-        ScreenSettingsLoader.Settings.windows = windows;
-        ScreenSettingsLoader.Settings.screens = screens;
-
-        ScreenSettingsLoader.Save();
+        screenSettings.windows = windows;
+        screenSettings.screens = screens;
+        EditorUtility.SetDirty(screenSettings);
     }
 
     // indexをidにする．
