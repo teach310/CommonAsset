@@ -11,27 +11,12 @@ public class ScreenSettingsWindow : EditorWindow
         GetWindow<ScreenSettingsWindow>("ScreenSettings");
     }
 
-
-    SerializedObject so = null;
     ScreenSettings settings;
-
-    Vector2[] scroll = { Vector2.zero, Vector2.zero };
-
 
 
     TreeViewState state;
     ScreenTreeView treeView;
     SearchField searchField;
-
-
-    //void OnSelectionChange()
-    //{
-    //    var treeAsset = Selection.activeObject as ScreenSettings;
-    //    if (treeAsset != null && treeAsset != settings)
-    //    {
-    //        settings = treeAsset;
-    //    }
-    //}
 
     void OnEnable()
     {
@@ -39,7 +24,7 @@ public class ScreenSettingsWindow : EditorWindow
 
 
         state = new TreeViewState();
-        treeView = new ScreenTreeView(state, ScreenSettingsUseCase.Load());
+        treeView = new ScreenTreeView(state, ScreenSettingsLoader.Settings);
         treeView.Reload();
         // ScriptableObject取得
 
