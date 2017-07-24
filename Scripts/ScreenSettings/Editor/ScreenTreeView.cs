@@ -59,42 +59,36 @@ public class ScreenTreeView : TreeView
         Reload();
     }
 
-
-
     protected override void KeyEvent()
     {
         base.KeyEvent();
         var e = Event.current;
+
         if (e.type == EventType.KeyDown)
         {
-            if (e.keyCode == KeyCode.A)
-            {
-                OnKeyDownA();
-                e.Use();
-            }
-
-            if (e.keyCode == KeyCode.S)
-            {
-                OnKeyDownS();
-                e.Use();
-            }
-
-            if (e.keyCode == KeyCode.D)
-            {
-                OnKeyDownDelete();
-                e.Use();
-            }
-
-            if (e.keyCode == KeyCode.U)
-            {
-                OnKeyDownU();
-                e.Use();
-            }
-
-            if (e.keyCode == KeyCode.I)
-            {
-                OnKeyDownI();
-                e.Use();
+            switch (e.keyCode) { 
+                case KeyCode.A:
+                    OnKeyDownA();
+                    e.Use();
+                    break;
+                case KeyCode.S:
+                    OnKeyDownS();
+                    e.Use();
+                    break;
+                case KeyCode.D:
+                    OnKeyDownD();
+                    e.Use();
+                    break;
+                case KeyCode.U:
+                    OnKeyDownU();
+                    e.Use();
+                    break;
+                case KeyCode.I:
+                    OnKeyDownI();
+                    e.Use();
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -139,20 +133,33 @@ public class ScreenTreeView : TreeView
         Reload();
     }
 
-    void OnKeyDownDelete()
+    void OnKeyDownD()
     {
         var selections = GetSelection();
         if (selections.Count() != 1)
             return;
+
+
         var rows = GetRows();
         var item = rows.First(x => x.id == selections.First());
+
+		// Windowを全て消すことを禁止する
+		if (IsOneWindow() && item.parent == rootItem)
+			return;
+
         int index = rows.IndexOf(item);
-        item.parent.children.Remove(item);
+
+
+		item.parent.children.Remove(item);
         SetupIdsFromParentsAndChildren();
         if (index != 0)
             this.SetSelection(new List<int> { rows[index - 1].id });
         TreeToSettings();
         Reload();
+    }
+
+    bool IsOneWindow(){
+        return rootItem.children.Count() == 1;
     }
 
     void TreeToSettings()
@@ -211,6 +218,7 @@ public class ScreenTreeView : TreeView
         var item = rows.First(x => x.id == selections.First());
         MoveDown(item);
     }
+
 
     void MoveUp(TreeViewItem item)
     {

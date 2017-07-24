@@ -11,18 +11,28 @@ public class WindowPresenter : MonoBehaviour
     public ScreenPresenter CurrentScreen;
     [SerializeField] Transform screenContainer;
 
-    // 初期化
-    public virtual void Initialize()
+    void Reset()
     {
+        screenContainer = this.transform.Find("Screen");
     }
-    // OnOpenの直前
-    public virtual void OnBeforeOpen()
+
+    // 初期化
+    public virtual IObservable<Unit> Initialize()
     {
+        return Observable.ReturnUnit();
+    }
+
+    // OnOpenの直前
+    public virtual IObservable<Unit> OnBeforeOpen()
+    {
+
+        return Observable.ReturnUnit();
     }
 
     // 自身が開かれる時
-    public virtual void OnOpen()
+    public virtual IObservable<Unit> OnOpen()
     {
+        return Observable.ReturnUnit();
         //DialogManager.Instance.CreateContent (DialogType.Common);
     }
 
@@ -32,13 +42,15 @@ public class WindowPresenter : MonoBehaviour
     }
 
     // OnCloseInの直前
-    public virtual void OnBeforeCloseIn()
+    public virtual IObservable<Unit> OnBeforeCloseIn()
     {
+        return Observable.ReturnUnit();
     }
 
     // 他のWindowが閉じられて，自身が表示される時
-    public virtual void OnCloseIn()
+    public virtual IObservable<Unit> OnCloseIn()
     {
+        return Observable.ReturnUnit();
     }
 
     // 自身を閉じることによって，自身が画面から消える時
@@ -60,16 +72,16 @@ public class WindowPresenter : MonoBehaviour
 
 
     // スクリーン遷移
-    public T PushScreen<T>(UnityAction<T> action = null)
+    public IObservable<T> MoveScreen<T>(UnityAction<T> action = null)
         where T : ScreenPresenter
     {
-        return PushScreen(typeof(T).Name, action);
+        return MoveScreen(typeof(T).Name, action);
     }
 
     /// <summary>
     /// スクリーン遷移　型安全でないためここから呼ぶのは非推奨
     /// </summary>
-    public T PushScreen<T>(string screenType, UnityAction<T> action = null)
+    public IObservable<T> MoveScreen<T>(string screenType, UnityAction<T> action = null)
         where T : ScreenPresenter
     {
         OnScreenWillChange();
@@ -78,40 +90,37 @@ public class WindowPresenter : MonoBehaviour
         {
             previewScreen.OnMoveOut();
             beforeScreenStack.Push(previewScreen);
+            previewScreen.gameObject.SetActive(false);
         }
 
-        var onEndMoveInSubject = new AsyncSubject<T>();
-        onEndMoveInSubject.Subscribe(
+
+        var transition = MoveTransition(screenType, action);
+        transition.Subscribe(
             x => CurrentScreen = x,
             () =>
             {
                 OnScreenChanged();
-                // 前のスクリーンを非表示にする
-                if (previewScreen != null)
-                {
-                    previewScreen.gameObject.SetActive(false);
-                }
+                //// 前のスクリーンを非表示にする
+                //if (previewScreen != null)
+                //{
+                //    previewScreen.gameObject.SetActive(false);
+                //}
             });
-
         // 生成
-        return MoveTransition(screenType, action, onEndMoveInSubject);
+        return transition;
     }
 
 
-    public void BackScreen()
+    public IObservable<ScreenPresenter> BackScreen()
     {
-        if (beforeScreenStack.Count < 1)
-        {
-            Debug.LogError("no stack");
-            // 前の階層がないので何もしない
-            return;
-        }
         OnScreenWillChange();
         var nextScreen = beforeScreenStack.Pop();
-        BackTransition(CurrentScreen, nextScreen).Subscribe(
+        var transition = BackTransition(CurrentScreen, nextScreen);
+        transition.Subscribe(
             x => CurrentScreen = x,
             () => OnScreenChanged()
         );
+        return transition;
     }
 
     IObservable<ScreenPresenter> BackTransition(ScreenPresenter preview, ScreenPresenter next)
@@ -133,9 +142,10 @@ public class WindowPresenter : MonoBehaviour
     }
 
     // トランジション
-    T MoveTransition<T>(string screenType, UnityAction<T> action = null, IObserver<T> observer = null)
+    IObservable<T> MoveTransition<T>(string screenType, UnityAction<T> action = null)
         where T : ScreenPresenter
     {
+        var subject = new AsyncSubject<T>();
         GameObject obj = Instantiate(ResourcesManager.Instance.GetScreen(screenType), screenContainer) as GameObject;
         T screen = obj.GetComponent<T>();
 
@@ -154,12 +164,14 @@ public class WindowPresenter : MonoBehaviour
         }, () =>
         {
             screen.OnEndMoveIn();
-            if (observer != null)
-            {
-                observer.OnNext(screen);
-                observer.OnCompleted();
-            }
+
+            subject.OnNext(screen);
+            subject.OnCompleted();
         });
-        return screen;
+        return subject;
+    }
+
+    public bool HasScreenStack() {
+        return beforeScreenStack.Count > 0;
     }
 }

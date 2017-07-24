@@ -1,6 +1,7 @@
 ﻿﻿using UnityEditor;
 using UnityEngine;
 using UnityEditor.IMGUI.Controls;
+using System.IO;
 
 public class ScreenSettingsWindow : EditorWindow
 {
@@ -69,71 +70,42 @@ public class ScreenSettingsWindow : EditorWindow
             return;
         }
 
+        if(treeView == null){
+            InitTreeView();
+        }
+
         GUILayout.Space(5f);
         ToolBar();
         GUILayout.Space(3f);
-		//const float topToolbarHeight = 20f;
-		//Rect toolbarRect = new Rect()
 
 		EditorGUILayout.LabelField("");
 		var rect = GUILayoutUtility.GetLastRect();
         treeView.OnGUI(new Rect(rect.x, rect.y, 210f, position.height - rect.height));
-        //using (new EditorGUILayout.VerticalScope())
-        //{
-        //    TopPanel();
-        //    using (new EditorGUILayout.HorizontalScope())
-        //    {
-        //        LeftPabel();
-        //        GUILayout.Space(5);
-        //        RightPanel();
-        //    }
-        //}
     }
 
-    void ToolBar() { 
+    void ToolBar() {
+        if (GUILayout.Button("ExportScript")){
+            ExportScreenSettings();
+        }
     }
-    // void TopPanel()
-    // {
-    //     using (new EditorGUILayout.HorizontalScope())
-    //     {
-    //         // ScreenのPath
-    //         GUILayout.Label("Path");
-    //         //settings.directoryPath = EditorGUILayout.TextField(settings.directoryPath, GUILayout.Width(80));
-    //         GUILayout.FlexibleSpace();
-    //         // Load
-    //         if (GUILayout.Button("Load", GUILayout.Width(80)))
-    //         {
-    //             Debug.Log("Load");
-    //         }
-    //         // Save
-    //         if (GUILayout.Button("Save", GUILayout.Width(80)))
-    //         {
-    //             Debug.Log("Save");
-    //         }
-    //     }
-    // }
 
-     //void LeftPabel()
-     //{
-         //// Window名
-         //using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.Width(220f)))
-         //{
-             //GUILayout.Space(5);
-    //if (GUILayout.Button("Add", GUILayout.Width(80)))
-    //{
-    //    // Window加算
-    //}
+    void ExportScreenSettings(){
+        string settingsPath = AssetDataBaseUtils.GetAssetFullPath(settings);
+        string dir = Path.GetDirectoryName(settingsPath);
+        //Window
+        string windowDir = dir + "/Window";
+        DirectoryUtils.SafeCreateDirectory(windowDir);
+        foreach (var item in settings.windows)
+        {
+            ScriptCreater.Create("WindowTemplate", string.Format("{0}/{1}.cs", windowDir, item.name));
+        }
 
-    //EditorGUILayout.LabelField("");
-    //var rect = GUILayoutUtility.GetLastRect();
-        //    treeView.OnGUI(new Rect(rect.x, rect.y, 210f, position.height - rect.height));
-        //    GUILayout.FlexibleSpace();
-        //}
+        string screenDir = dir + "/Screen";
+        DirectoryUtils.SafeCreateDirectory(screenDir);
+        foreach (var item in settings.screens)
+		{
+            ScriptCreater.Create("ScreenTemplate", string.Format("{0}/{1}.cs", screenDir, item.name));
+		}
 
-    //}
-
-    //void RightPanel()
-    //{
-    //    // Screen名
-    //}
+    }
 }

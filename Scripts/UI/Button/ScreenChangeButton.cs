@@ -1,14 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ScreenChangeButton : MonoBehaviour {
-    
-    //public ScreenPresenter<WindowPresenter> screen;
+[RequireComponent(typeof(Button))]
+public class ScreenChangeButton : MonoBehaviour
+{
+
+    public bool goRoot = false;
+    [SerializeField] WindowPresenter window;
+    [SerializeField] ScreenPresenter screen;
 
     void Awake()
     {
-        
+        this.GetComponent<Button>().onClick.AddListener(ChangeScreen);
+    }
+
+    public void ChangeScreen() {
+        if (goRoot)
+            ScenePresenter.Instance.GoRootScreen(window.name);
+        else
+            ScenePresenter.Instance.MoveScreen(screen.name);
     }
 }
