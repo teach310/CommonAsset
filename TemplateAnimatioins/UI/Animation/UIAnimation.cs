@@ -31,6 +31,7 @@ namespace Zeke.Tweening
 
 	public class AnimateInUI : UIAnimation
 	{
+        [SerializeField, HideInInspector]   
 		private bool isStart = false;
 		public override bool IsStart {
 			get {
@@ -62,6 +63,7 @@ namespace Zeke.Tweening
 
 	public class AnimateOutUI : UIAnimation
 	{
+        [SerializeField, HideInInspector]
 		private bool isStart = true;
 		public override bool IsStart {
 			get {
