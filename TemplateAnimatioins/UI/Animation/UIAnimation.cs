@@ -6,7 +6,7 @@ using DG.Tweening;
 /// <summary>
 /// UIAnimationのイベント
 /// </summary>
-namespace Zeke.Tweening
+namespace Common.Tweening
 {
 	public class UIAnimation : UIBase, IUIAnimation
 	{

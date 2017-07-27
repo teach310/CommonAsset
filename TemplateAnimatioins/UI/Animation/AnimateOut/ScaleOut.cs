@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Zeke.Tweening
+namespace Common.Tweening
 {
 	public class ScaleOut : AnimateOutUI
 	{

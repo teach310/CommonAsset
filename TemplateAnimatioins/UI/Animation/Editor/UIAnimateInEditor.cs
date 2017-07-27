@@ -5,7 +5,7 @@ using UnityEditor;
 using DG.Tweening;
 using System;
 
-namespace Zeke.Tweening
+namespace Common.Tweening
 {
 
 	[CustomEditor (typeof(UIAnimation), true)]

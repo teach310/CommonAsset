@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Zeke.Tweening; // 1
+using Common.Tweening; // 1
 using DG.Tweening; // 2
-namespace Zeke
+namespace Common
 {
 	public class DialogSample : MonoBehaviour
 	{

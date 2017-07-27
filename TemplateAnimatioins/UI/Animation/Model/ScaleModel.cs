@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Zeke.Tweening
+namespace Common.Tweening
 {
 	[System.Serializable]
 	public class ScaleModel : AnimationModel

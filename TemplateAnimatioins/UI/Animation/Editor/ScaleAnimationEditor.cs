@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using DG.Tweening;
 
-namespace Zeke.Tweening
+namespace Common.Tweening
 {
 	/// <summary>
 	/// Scale アニメーションの共通処理

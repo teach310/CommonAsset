@@ -16,9 +16,21 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
 
     void Start()
     {
+#if UNITY_EDITOR
+        ClearScene();
+#endif
         //MoveScreen(initialScreen.name);
         GoRootScreen(initialWindow.name);
     }
+
+#if UNITY_EDITOR
+    void ClearScene() {
+        foreach (var window in this.GetComponentsInChildren<WindowPresenter>(true))
+        {
+            Destroy(window.gameObject);
+        }
+    }
+#endif
 
     public IObservable<T> OpenWindow<T>(UnityAction<T> action = null)
         where T : WindowPresenter
@@ -59,7 +71,7 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
             initSubject,
             window.OnBeforeOpen(),
             window.OnOpen()
-        ).Subscribe(_ =>
+        ).OnComplete(() =>
         {
             openSubject.OnNext(window);
             openSubject.OnCompleted();
