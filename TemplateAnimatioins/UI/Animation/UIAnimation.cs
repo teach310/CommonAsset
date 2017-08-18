@@ -8,14 +8,14 @@ using DG.Tweening;
 /// </summary>
 namespace Common.Tweening
 {
-	public class UIAnimation : UIBase, IUIAnimation
+    public abstract class UIAnimation : UIBase, IUIAnimation
 	{
 		// エディタ側に書くと初期化されてしまうためこちらに記述
 		[HideInInspector]
 		public bool isExtraSettings = true;
 
-		public virtual AnimationModel Model {
-			get;
+        public virtual AnimationModel Model {
+            get{ return new AnimationModel(); }
 		}
 
 		public virtual bool IsStart {
@@ -31,8 +31,9 @@ namespace Common.Tweening
 
 	public class AnimateInUI : UIAnimation
 	{
-        [SerializeField, HideInInspector]   
-		private bool isStart = false;
+        [SerializeField, HideInInspector]
+        private bool isStart = false;
+
 		public override bool IsStart {
 			get {
 				return this.isStart;
