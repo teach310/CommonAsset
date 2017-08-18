@@ -8,8 +8,9 @@ namespace Common.Tweening
 	[System.Serializable]
 	public class ScaleModel : AnimationModel
 	{
-		public Vector3 startValue;
-		public Vector3 endValue;
+        // Scale値を0にするとイベントを受け付けなくなる
+        public Vector3 startValue = new Vector3(0.1f, 0.1f, 0.1f);
+		public Vector3 endValue = new Vector3(0.1f, 0.1f, 0.1f);
 		[SerializeField]
 		private RectTransform rectTransform;
 
