@@ -3,7 +3,7 @@
 public class AsyncTask : CustomYieldInstruction
 {
     bool isDone = false;
-    bool IsDone { get { return isDone; } }
+    public bool IsDone { get { return isDone; } }
 
     public virtual void Done()
     {
@@ -22,7 +22,7 @@ public class AsyncTask : CustomYieldInstruction
 public class AsyncRequest<T> : CustomYieldInstruction
 {
 	bool isDone = false;
-	bool IsDone { get { return isDone; } }
+	public bool IsDone { get { return isDone; } }
     protected T data;
 
 	public virtual void Done(T data)
