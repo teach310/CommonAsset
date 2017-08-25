@@ -15,7 +15,7 @@ namespace Common.UI
         // listCoordから2次元座標を取得
         protected override Vector2 GetItemPos(Layout layout, float listCoord){
             var ret = Vector2.zero;
-                switch(layout){
+             switch(layout){
                 case Layout.Horizontal :
                     ret = new Vector2(-listCoord, 0f);
                     break;
@@ -43,8 +43,7 @@ namespace Common.UI
         // アイテムの高さ
         protected virtual float GetSize(T model)
         {
-            var rect = prototype.GetComponent<RectTransform>().rect;
-            return layoutRp.Value == Layout.Horizontal ? rect.width : rect.height;
+            return layoutRp.Value == Layout.Horizontal ? ProtoRectTransform.rect.width : ProtoRectTransform.rect.height;
         }
 
         protected override void SetItemCoord()

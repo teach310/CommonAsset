@@ -69,6 +69,16 @@ namespace Common.UI
     public abstract class ListViewBase<T> : UIBase
     {
         public GameObject prototype;
+        RectTransform protoRectTransform;
+        protected RectTransform ProtoRectTransform{
+            get{ 
+                if(protoRectTransform == null)
+                    protoRectTransform = prototype.GetComponent<RectTransform>();
+                return protoRectTransform;
+            }
+        }
+
+
         public LayoutReactiveProperty layoutRp;
         protected ScrollRect scrollRect;
         public float baffer = 50f;
@@ -248,6 +258,8 @@ namespace Common.UI
 
         bool IsInRange(int index)
         {
+            if(ContentSize < DisplaySize)
+                return true;
             var currentPos = Mathf.Clamp01(ScrollPos);
             return itemCoordList[index].RangeMin <= currentPos && currentPos <= itemCoordList[index].RangeMax;
         }
@@ -334,7 +346,7 @@ namespace Common.UI
             }
         }
 
-        void SetItemLayout(RectTransform rt)
+        protected virtual void SetItemLayout(RectTransform rt)
         {
             switch (layoutRp.Value)
             {
