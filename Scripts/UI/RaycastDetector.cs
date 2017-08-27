@@ -1,11 +1,25 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-public class RaycastDetector : Graphic
+namespace UnityEngine.UI
 {
+    public class RaycastDetector : Graphic{
 
-	protected override void Reset()
-	{
-		this.color = new Color(0, 0, 0, 0);
-	}
+        protected override void OnPopulateMesh(VertexHelper v)
+        {
+            base.OnPopulateMesh(v);
+            v.Clear();
+        }
+        #if UNITY_EDITOR
+
+        [CustomEditor(typeof(RaycastDetector))]
+        class GraphicCastEditor : Editor
+        {
+            public override void OnInspectorGUI() {
+            }
+        }
+
+        #endif
+    } 
 }

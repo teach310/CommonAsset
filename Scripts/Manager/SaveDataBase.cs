@@ -9,173 +9,204 @@ using UnityEditor;
 #endif
 using UniRx;
 
-public enum StorageMethod
+namespace Common.Data
 {
-	Binary,
-	JSON
-}
+    public enum StorageMethod
+    {
+        Binary,
+        JSON
+    }
 
-public class SaveDataBase<TKey> : SingletonMonoBehaviour<TKey> where TKey : MonoBehaviour{
-
-
-	public static void SafeCreateDirectory(string path){
-		if(!Directory.Exists(path)){
-			//SaveDataフォルダ作成
-			Directory.CreateDirectory(path);
-		}
-	}
-
-	/// <summary>
-	/// Loads the data.
-	/// </summary>
-	/// <returns>The data.</returns>
-	/// <param name="fileName">File name.</param>
-	/// <typeparam name="T">The 1st type parameter.</typeparam>
-	protected static T LoadData<T>(string fileName, StorageMethod method){
-		T data = JsonUtility.FromJson<T>(ReadJson(fileName, method));
-		return data;
-	}
-
-	public static void CreateDir(){
-		string dirPath = Application.persistentDataPath + "/SaveData/";
-		SafeCreateDirectory (dirPath);
-	}
-
-	/// <summary>
-	/// Reads the json.
-	/// </summary>
-	static string ReadJson(string fileName, StorageMethod method){
-		string json = string.Empty;
-		string filePath = GetFilePath(fileName);
-
-		if (!Application.isEditor){
-			CreateDir();
-		}
-
-//		if (Application.platform == RuntimePlatform.IPhonePlayer) {
-//			// ファイルをコピー
-//			CopyFile(fileName);
-//		}
-
-		try {
-			switch (method) {
-			case StorageMethod.Binary:
-				BinaryFormatter bf = new BinaryFormatter ();
-				using (FileStream file = File.Open (filePath, FileMode.Open)) {
-					json = (string)bf.Deserialize (file);
-					file.Close ();
-				}
-				break;
-
-			case StorageMethod.JSON:
-				json = File.ReadAllText(filePath);
-				break;
-			}
-		} catch (Exception ex) {
-			Debug.LogError (ex.Message);
-			//Dialog.Instance.Show(ex.Message, ()=>{});
-		}
-		return json;
-
-	}
+    public static class FileService
+    {
 
 
-	/// <summary>
-	/// Saves the json.
-	/// </summary>
-	protected void SaveJson<T>(T data, string key, StorageMethod method)
-	{
-		string json = JsonUtility.ToJson (data);
-		string[] pathArray = key.Split ('/');
+        public static void SafeCreateDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                //SaveDataフォルダ作成
+                Directory.CreateDirectory(path);
+            }
+        }
 
-		string path = GetFolderPath();
-		if (pathArray.Length > 1) {
-			for (int i=0; i < pathArray.Length-1; i++) {
-				path += "/" + pathArray[i];
-			}
-			SafeCreateDirectory (path);
-		}
+        public static T Load<T>(StorageMethod method = StorageMethod.JSON)
+        {
+            return LoadData<T>(typeof(T).Name, method);
+        }
 
-		string filePath = GetFilePath(key);
-		Debug.Log (filePath);
-		try {
-			switch(method){
-			case StorageMethod.Binary:
-				BinaryFormatter bf = new BinaryFormatter ();
-				FileStream file = File.Create (filePath);
-				bf.Serialize (file, json);
-				file.Close ();
-				break;
-			case StorageMethod.JSON:
-				File.WriteAllText(filePath, json);
-				break;
-			}
-		} catch (Exception ex) {
-			Debug.LogWarning ("エラー: " + ex.Message);
-		}
+        /// <summary>
+        /// Loads the data.
+        /// </summary>
+        /// <returns>The data.</returns>
+        /// <param name="fileName">File name.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        private static T LoadData<T>(string fileName, StorageMethod method)
+        {
+            T data = JsonUtility.FromJson<T>(ReadJson(fileName, method));
+            return data;
+        }
 
-		#if UNITY_EDITOR
-		AssetDatabase.Refresh();
-		#endif
-	}
+        public static void CreateDir()
+        {
+            string dirPath = Application.persistentDataPath + "/SaveData/";
+            SafeCreateDirectory(dirPath);
+        }
 
-	static string GetFolderPath () {
-		string folderPath = Application.persistentDataPath;
-		#if UNITY_EDITOR
-		folderPath = Application.dataPath;
-		#endif
-		folderPath += "/SaveData/";
-		SafeCreateDirectory (folderPath);
-		return folderPath;
-	}
+        /// <summary>
+        /// Reads the json.
+        /// </summary>
+        static string ReadJson(string fileName, StorageMethod method)
+        {
+            string json = string.Empty;
+            string filePath = GetFilePath(fileName);
 
-	static string GetFilePath(string key){
-		return GetFolderPath () + key;
-	}
+            if (!Application.isEditor)
+            {
+                CreateDir();
+            }
 
-	public static bool Exists (string key) {
-		string path = GetFilePath(key);
-		return File.Exists(path);
-	}
+            //		if (Application.platform == RuntimePlatform.IPhonePlayer) {
+            //			// ファイルをコピー
+            //			CopyFile(fileName);
+            //		}
 
-	// ios用
-	void CopyFile(string fileName){
-		string baseFilePath = string.Format ("{0}/{1}.json", Application.streamingAssetsPath, fileName);
-		string targetFilePath = string.Format ("{0}/{1}.json", Application.persistentDataPath, fileName);
+            try
+            {
+                switch (method)
+                {
+                    case StorageMethod.Binary:
+                        BinaryFormatter bf = new BinaryFormatter();
+                        using (FileStream file = File.Open(filePath, FileMode.Open))
+                        {
+                            json = (string)bf.Deserialize(file);
+                            file.Close();
+                        }
+                        break;
+
+                    case StorageMethod.JSON:
+                        json = File.ReadAllText(filePath);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+            return json;
+
+        }
 
 
+        /// <summary>
+        /// Saves the json.
+        /// </summary>
+        public static void SaveJson<T>(T data, string key, StorageMethod method = StorageMethod.JSON)
+        {
+            string json = JsonUtility.ToJson(data);
+            string[] pathArray = key.Split('/');
 
-		if (File.Exists (targetFilePath)) {
-			var bTime = File.GetCreationTime (baseFilePath);
-			var tTime = File.GetCreationTime (targetFilePath);
-			if (bTime == tTime) {
-				return;
-			} else {
-				File.Delete (targetFilePath);
-			}
-		}
-		File.Copy (baseFilePath, targetFilePath);
-	}
+            string path = GetFolderPath();
+            if (pathArray.Length > 1)
+            {
+                for (int i = 0; i < pathArray.Length - 1; i++)
+                {
+                    path += "/" + pathArray[i];
+                }
+                SafeCreateDirectory(path);
+            }
 
-	//Android用
-	public void CopyFile(IObserver<Unit> observer, string fileName){
-		string baseFilePath = string.Format ("{0}/{1}.json", Application.streamingAssetsPath, fileName);
-		string targetFilePath = string.Format ("{0}/{1}.json", Application.persistentDataPath, fileName);
+            string filePath = GetFilePath(key);
+            Debug.Log(filePath);
+            try
+            {
+                switch (method)
+                {
+                    case StorageMethod.Binary:
+                        BinaryFormatter bf = new BinaryFormatter();
+                        FileStream file = File.Create(filePath);
+                        bf.Serialize(file, json);
+                        file.Close();
+                        break;
+                    case StorageMethod.JSON:
+                        File.WriteAllText(filePath, json);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("エラー: " + ex.Message);
+            }
 
-		StartCoroutine(CopyFileCoroutine(observer,  baseFilePath, targetFilePath));
-	}
+#if UNITY_EDITOR
+            AssetDatabase.Refresh();
+#endif
+        }
 
-	// Android用コピー
-	IEnumerator CopyFileCoroutine(IObserver<Unit> observer,  string basePath, string targetPath){
-		WWW www = new WWW(basePath);
-		yield return www;
+        static string GetFolderPath()
+        {
+            string folderPath = Application.persistentDataPath;
+#if UNITY_EDITOR
+            folderPath = Application.dataPath;
+#endif
+            folderPath += "/SaveData/";
+            SafeCreateDirectory(folderPath);
+            return folderPath;
+        }
 
-		File.WriteAllBytes(targetPath, www.bytes);
-		observer.OnNext (Unit.Default);
-		observer.OnCompleted ();
-	}
+        static string GetFilePath(string key)
+        {
+            return GetFolderPath() + key;
+        }
+
+        public static bool Exists(string key)
+        {
+            string path = GetFilePath(key);
+            return File.Exists(path);
+        }
+
+        // ios用
+        static void CopyFile(string fileName)
+        {
+            string baseFilePath = string.Format("{0}/{1}.json", Application.streamingAssetsPath, fileName);
+            string targetFilePath = string.Format("{0}/{1}.json", Application.persistentDataPath, fileName);
 
 
 
+            if (File.Exists(targetFilePath))
+            {
+                var bTime = File.GetCreationTime(baseFilePath);
+                var tTime = File.GetCreationTime(targetFilePath);
+                if (bTime == tTime)
+                {
+                    return;
+                }
+                else
+                {
+                    File.Delete(targetFilePath);
+                }
+            }
+            File.Copy(baseFilePath, targetFilePath);
+        }
 
+        //Android用 TODO そのままCoroutineで返したほうがいい
+        static void CopyFile(IObserver<Unit> observer, string fileName)
+        {
+            string baseFilePath = string.Format("{0}/{1}.json", Application.streamingAssetsPath, fileName);
+            string targetFilePath = string.Format("{0}/{1}.json", Application.persistentDataPath, fileName);
+
+            CoroutineHandler.StartStaticCoroutine(CopyFileCoroutine(observer, baseFilePath, targetFilePath));
+        }
+
+        // Android用コピー
+        static IEnumerator CopyFileCoroutine(IObserver<Unit> observer, string basePath, string targetPath)
+        {
+            WWW www = new WWW(basePath);
+            yield return www;
+
+            File.WriteAllBytes(targetPath, www.bytes);
+            observer.OnNext(Unit.Default);
+            observer.OnCompleted();
+        }
+    }
 }
