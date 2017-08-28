@@ -33,7 +33,8 @@ namespace Common.UI
 
             // Spaceとpadding分を足す
             ret += new Vector2(x * space.x, -1 * y * space.y);
-            ret += layoutRp.Value == Layout.Horizontal ? new Vector2(paddingTop, 0) : new Vector2(0, -paddingTop);
+            var unitVec = layoutRp.Value == Layout.Horizontal ?  new Vector2(1, 0) : new Vector2(0, -1);
+            ret += unitVec * (paddingTop + CalcEstimatedInsertedSpace(index));
             return ret;
 
         }
@@ -45,6 +46,7 @@ namespace Common.UI
             var currentSpace = (layoutRp.Value == Layout.Horizontal ? space.x : space.y);
             for (int i = 0; i < (DisplayedDataList.Count / constraintCount); i++)
             {
+                estimatedSize += InsertSpace(i);
                 estimatedSize += GetSize(DisplayedDataList[i]) + currentSpace;
             }
             estimatedSize -= currentSpace;
@@ -67,6 +69,7 @@ namespace Common.UI
             var currentSpace = (layoutRp.Value == Layout.Horizontal ? space.x : space.y);
             for (int i = 0; i < DisplayedDataList.Count; i++)
             {
+                estimatedSize += InsertSpace(i);
                 float listCoord = (float)i;
                 float min = ConvertPosToScrollPos(Mathf.Max(0, estimatedSize - baffer - DisplaySize));
                 float max = ConvertPosToScrollPos(estimatedSize + GetSize(DisplayedDataList[i]) + baffer);
@@ -74,6 +77,19 @@ namespace Common.UI
                 if((i % constraintCount) == constraintCount - 1)
                     estimatedSize += GetSize(DisplayedDataList[i]) + currentSpace;
             }
+        }
+
+        protected virtual float CalcEstimatedInsertedSpace(int end, int start = 0){
+            float ret = 0f;
+            for (int i = start; i <= end; i++)
+            {
+                ret += InsertSpace(i);
+            }
+            return ret;
+        }
+
+        protected virtual float InsertSpace(int i){
+            return 0f;
         }
 
         protected override void SetItemLayout(RectTransform rt)

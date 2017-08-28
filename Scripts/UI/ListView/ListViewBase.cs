@@ -91,6 +91,16 @@ namespace Common.UI
         int firstActiveItemIndex;
         int lastActiveItemIndex;
 
+        Subject<ListViewItem<T>> onShowItem = new Subject<ListViewItem<T>>();
+        public IObservable<ListViewItem<T>> OnShowItem{
+            get{return onShowItem;}
+        }
+
+        Subject<ListViewItem<T>> onHideItem = new Subject<ListViewItem<T>>();
+        public IObservable<ListViewItem<T>> OnHideItem{
+            get{return onHideItem;}
+        }
+
 
         // 表示するデータ オーバーライドしてフィルターをかける
         protected List<T> DisplayedDataList
@@ -293,6 +303,7 @@ namespace Common.UI
                     if (items.Where(x => x.gameObject.activeSelf).All(x => x.DataIndex != i))
                     {
                         var item = pool.Rent();
+                        onShowItem.OnNext(item);
                         UpdateItemForIndex(item, i);
                     }
                 }
@@ -308,7 +319,9 @@ namespace Common.UI
                 {
                     if (IsInRange(i))
                     {
-                        UpdateItemForIndex(pool.Rent(), i);
+                        var item = pool.Rent();
+                        onShowItem.OnNext(item);
+                        UpdateItemForIndex(item, i);
                         lastActiveItemIndex = i;
                     }
                     else
@@ -323,7 +336,9 @@ namespace Common.UI
                 {
                     if (IsInRange(i))
                     {
-                        UpdateItemForIndex(pool.Rent(), i);
+                        var item = pool.Rent();
+                        onShowItem.OnNext(item);
+                        UpdateItemForIndex(item, i);
                         firstActiveItemIndex = i;
                     }
                     else
@@ -342,6 +357,7 @@ namespace Common.UI
                 if (!IsInRange(item.DataIndex) && item.gameObject.activeSelf)
                 {
                     pool.Return(item);
+                    onHideItem.OnNext(item);
                 }
             }
         }

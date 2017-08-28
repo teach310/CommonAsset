@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class SampleTGrid : TGrid<SampleListItem.Model> {
     public int dataCount = 10;
+    public float insertSpace = 20f;
 
     // Use this for initialization
     void Start () {
@@ -18,5 +19,13 @@ public class SampleTGrid : TGrid<SampleListItem.Model> {
             list.Add(new SampleListItem.Model());
         }
         SetData(list);
+    }
+
+    protected override float InsertSpace(int i)
+    {
+        if(i == 6)
+            return insertSpace;
+
+        return base.InsertSpace(i);
     }
 }
