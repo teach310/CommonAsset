@@ -4,5 +4,5 @@ using UnityEngine;
 
 public static class Urls {
 
-    public static readonly string database = "https://ssmasterdatatest.firebaseio.com/";
+    public static readonly string database = "https://balancesheetmasterdata.firebaseio.com/";
 }

@@ -4,9 +4,28 @@ using UnityEngine;
 
 namespace Common.UI
 {
+    // Verticalのみの対応
     public class TGrid<T> : ListViewBase<T>
     {
-        public Vector2 space;
+        // 横は自動で計算
+        public float space;
+        float vertSpace;
+        Vector2? space2 = null;
+        Vector2 Space{
+            get
+            {
+                if (space2 == null)
+                {
+                    // TODO Horizontal
+                    vertSpace = (rectTransform.rect.width - (ProtoRectTransform.rect.width * constraintCount))
+                        / (constraintCount -1);
+                    space2 = new Vector2(vertSpace, space);
+                }
+                return space2.Value;
+            }
+        }
+
+
         public float paddingTop = 0f;
         public float paddingBottom = 0f;
         public int constraintCount = 5;
@@ -16,7 +35,7 @@ namespace Common.UI
         {
             var ret = Vector2.zero;
             var index = (int)listCoord;
-            int x = 0,y = 0;
+            int x = 0, y = 0;
             switch (layout)
             {
                 case Layout.Horizontal:
@@ -32,8 +51,8 @@ namespace Common.UI
             }
 
             // Spaceとpadding分を足す
-            ret += new Vector2(x * space.x, -1 * y * space.y);
-            var unitVec = layoutRp.Value == Layout.Horizontal ?  new Vector2(1, 0) : new Vector2(0, -1);
+            ret += new Vector2(x * Space.x, -1 * y * Space.y);
+            var unitVec = layoutRp.Value == Layout.Horizontal ? new Vector2(1, 0) : new Vector2(0, -1);
             ret += unitVec * (paddingTop + CalcEstimatedInsertedSpace(index));
             return ret;
 
@@ -43,8 +62,8 @@ namespace Common.UI
         {
             float estimatedSize = 0f;
             estimatedSize += paddingTop;
-            var currentSpace = (layoutRp.Value == Layout.Horizontal ? space.x : space.y);
-            for (int i = 0; i < (DisplayedDataList.Count / constraintCount); i++)
+            var currentSpace = (layoutRp.Value == Layout.Horizontal ? Space.x : Space.y);
+            for (int i = 0; i <= (DisplayedDataList.Count / constraintCount); i++)
             {
                 estimatedSize += InsertSpace(i);
                 estimatedSize += GetSize(DisplayedDataList[i]) + currentSpace;
@@ -66,7 +85,7 @@ namespace Common.UI
             float estimatedSize = 0f;
             itemCoordList.Clear();
             estimatedSize += paddingTop;
-            var currentSpace = (layoutRp.Value == Layout.Horizontal ? space.x : space.y);
+            var currentSpace = (layoutRp.Value == Layout.Horizontal ? Space.x : Space.y);
             for (int i = 0; i < DisplayedDataList.Count; i++)
             {
                 estimatedSize += InsertSpace(i);
@@ -74,12 +93,13 @@ namespace Common.UI
                 float min = ConvertPosToScrollPos(Mathf.Max(0, estimatedSize - baffer - DisplaySize));
                 float max = ConvertPosToScrollPos(estimatedSize + GetSize(DisplayedDataList[i]) + baffer);
                 itemCoordList.Add(new ItemCoord(listCoord, min, max));
-                if((i % constraintCount) == constraintCount - 1)
+                if ((i % constraintCount) == constraintCount - 1)
                     estimatedSize += GetSize(DisplayedDataList[i]) + currentSpace;
             }
         }
 
-        protected virtual float CalcEstimatedInsertedSpace(int end, int start = 0){
+        protected virtual float CalcEstimatedInsertedSpace(int end, int start = 0)
+        {
             float ret = 0f;
             for (int i = start; i <= end; i++)
             {
@@ -88,7 +108,8 @@ namespace Common.UI
             return ret;
         }
 
-        protected virtual float InsertSpace(int i){
+        protected virtual float InsertSpace(int i)
+        {
             return 0f;
         }
 

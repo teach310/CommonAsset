@@ -32,6 +32,20 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         }
     }
 #endif
+    #region Comparer
+    public static bool IsCurrentWindow<T>()
+        where T:WindowPresenter
+    {
+        return CurrentWindow.GetType() == typeof(T);
+    }
+
+    public static bool IsCurrentScreen<T>()
+        where T:ScreenPresenter
+    {
+        return CurrentWindow.CurrentScreen.GetType() == typeof(T);
+    }
+    #endregion
+
 
     public IObservable<T> OpenWindow<T>(UnityAction<T> action = null)
         where T : WindowPresenter
@@ -109,6 +123,12 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         }
     }
 
+    public static IObservable<T> MoveScreen<T>(UnityAction<T> action = null)
+        where T:ScreenPresenter
+    {
+        return Instance.MoveScreen(typeof(T).Name, action);
+    }
+
     public IObservable<ScreenPresenter> MoveScreen(string screenName)
     {
         return MoveScreen<ScreenPresenter>(screenName);
@@ -117,7 +137,7 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
     /// <summary>
     /// 直接スクリーンを呼ぶ．Backでは用いない
     /// </summary>
-    public IObservable<T> MoveScreen<T>(string screenName, UnityAction<T> action = null)
+    IObservable<T> MoveScreen<T>(string screenName, UnityAction<T> action = null)
         where T : ScreenPresenter
     {
 

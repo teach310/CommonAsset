@@ -175,9 +175,11 @@ namespace Common.UI
             {
                 return;
             }
-            var go = new GameObject(contentName, typeof(RectTransform));
+            var go = new GameObject(contentName, typeof(RectTransform), typeof(RaycastDetector));
             var content = go.GetComponent<RectTransform>();
             content.SetParent(this.transform);
+            content.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+            content.transform.localScale = Vector3.one;
             content.anchoredPosition = Vector2.zero;
             this.GetComponent<ScrollRect>().content = content;
         }
@@ -219,14 +221,14 @@ namespace Common.UI
             isInitialized = true;
         }
 
-        protected void SetData(List<T> dataList)
+        public void SetData(List<T> dataList)
         {
             InitializeIfNeeded();
             this.dataList = dataList;
             ResetContent();
         }
 
-        // 初期化して更新 
+        // 初期化して更新
         void ResetContent()
         {
             // スクロールする長さを設定

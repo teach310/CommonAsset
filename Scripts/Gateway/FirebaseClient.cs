@@ -28,7 +28,7 @@ public static class FirebaseClient
 
     public static IObservable<Unit> LoadMaster()
     {
-        Debug.LogError("Loading..");
+        Debug.Log("Loading..");
         var subject = new AsyncSubject<Unit>();
         // マスターから全てのシート名を取得，それぞれに対応したListに格納する．
         DataBaseRef.Child("Master").GetValueAsync().ContinueWith(x =>
