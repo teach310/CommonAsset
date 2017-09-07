@@ -4,14 +4,21 @@ using UnityEngine;
 using UnityEditor;
 namespace Common.UI
 {
-    public class ListViewBaseEditor<T> : Editor
+    [CustomEditor(typeof(ListViewEdInterface), true)]
+    public class ListViewEditor : Editor
     {
+        ListViewEdInterface listView = null;
+
+        private void OnEnable()
+        {
+            listView = (ListViewEdInterface) target;
+        }
+
         public override void OnInspectorGUI()
         {
-            var listView = (ListViewBase<T>)target;
             DrawDefaultInspector();
-            if(GUILayout.Button("ResetAllItems")){
-                listView.ResetAllItems();
+            if(GUILayout.Button("ResetContent")){
+                listView.ResetContent();
             }
         }
     }

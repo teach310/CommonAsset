@@ -66,7 +66,7 @@ namespace Common.UI
     // Scroll座標 ScrollPos  [0 -> ContentSize - DisplaySize] を正規化
     // List座標 ListItemの位置を表すための座標
     [RequireComponent(typeof(ScrollRect))]
-    public abstract class ListViewBase<T> : UIBase
+    public abstract class ListViewBase<T> : ListViewEdInterface
     {
         public GameObject prototype;
         RectTransform protoRectTransform;
@@ -229,8 +229,9 @@ namespace Common.UI
         }
 
         // 初期化して更新
-        void ResetContent()
+        public override void ResetContent()
         {
+            Debug.LogError("ResetContent");
             // スクロールする長さを設定
             ContentSize = CalcContentSize();
             SetItemCoord();
