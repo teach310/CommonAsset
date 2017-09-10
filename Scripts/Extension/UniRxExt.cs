@@ -4,6 +4,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using UniRx;
 using DG.Tweening;
+using System;
+
+public static class UniRxTools{
+    // メインスレッドで関数を実行し,IObservable<Unit>を返す関数
+    public static IObservable<Unit> ObservableAction(Action action){
+        action ();
+        return Observable.ReturnUnit ();
+    }
+}
 
 public static class UniRxExt{
 

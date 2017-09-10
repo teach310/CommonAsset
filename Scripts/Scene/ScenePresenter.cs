@@ -140,7 +140,6 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
     IObservable<T> MoveScreen<T> (string screenName, TransitionStyle transitionStyle = TransitionStyle.Null, Action<T> action = null)
         where T : ScreenPresenter
     {
-
         // screenの情報取得
         var screenEntity = screenSettings.screens.Find (x => x.name == screenName);
         // windowを取得

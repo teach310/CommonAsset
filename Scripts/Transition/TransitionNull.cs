@@ -10,13 +10,11 @@ namespace Common.Transition
     {
         public IObservable<Unit> AnimateIn()
         {
-            Debug.LogError ("AnimateIn");
             return Observable.ReturnUnit();
         }
 
         public IObservable<Unit> AnimateOut()
         {
-            Debug.LogError ("AnimateOut");
             return Observable.ReturnUnit();
         }
     }

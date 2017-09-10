@@ -231,7 +231,6 @@ namespace Common.UI
         // 初期化して更新
         public override void ResetContent()
         {
-            Debug.LogError("ResetContent");
             // スクロールする長さを設定
             ContentSize = CalcContentSize();
             SetItemCoord();
