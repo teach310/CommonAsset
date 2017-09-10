@@ -13,13 +13,6 @@ public static class UniRxExt{
 		return ret;
 	}
 
-	// Completeのタイミングのみを通知するSubjectに変換
-	public static IObservable<Unit> ToUnitObservable<T>(this IObservable<T> observable){
-		var subject = new AsyncSubject<Unit> ();
-		subject.OnNext (Unit.Default);
-		observable.OnComplete (() => subject.OnCompleted ());
-		return subject;
-	}
 
     // TweenをObservableにする
     public static IObservable<Unit> OnCompleteAsObservable(this Tween tween)

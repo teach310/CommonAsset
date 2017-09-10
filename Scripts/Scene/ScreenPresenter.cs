@@ -23,14 +23,18 @@ public class ScreenPresenter : MonoBehaviour {
 	}
 
 	// 自身に遷移してくる時
+    // Transitionの開始と同時に呼ばれる
 	public virtual IObservable<Unit> OnMoveIn(){
+        
 		//Debug.Log ("onMoveIn");
 		return Observable.ReturnUnit();
 	}
 
 	// OnMoveInの直後
-	public virtual void OnEndMoveIn(){
+    // TransitionとOnMoveInが両方終わった時に呼ばれる
+    public virtual IObservable<Unit> OnEndMoveIn(){
 		//Debug.Log ("onEndMoveIn");
+        return Observable.ReturnUnit();
 	}
 
 	// 次のスクリーンに遷移する時

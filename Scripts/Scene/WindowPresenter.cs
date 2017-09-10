@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UniRx;
+using System;
 
 public class WindowPresenter : MonoBehaviour
 {
@@ -72,16 +73,16 @@ public class WindowPresenter : MonoBehaviour
 
 
     // スクリーン遷移
-    public IObservable<T> MoveScreen<T>(UnityAction<T> action = null)
+    public IObservable<T> MoveScreen<T>(Action<T> action = null)
         where T : ScreenPresenter
     {
-        return MoveScreen(typeof(T).Name, action);
+        return MoveScreen(typeof(T).Name, action:action);
     }
 
     /// <summary>
     /// スクリーン遷移　型安全でないためここから呼ぶのは非推奨
     /// </summary>
-    public IObservable<T> MoveScreen<T>(string screenType, UnityAction<T> action = null)
+    public IObservable<T> MoveScreen<T>(string screenType,Const.TransitionStyle style = Const.TransitionStyle.Null, Action<T> action = null)
         where T : ScreenPresenter
     {
         OnScreenWillChange();
@@ -142,7 +143,7 @@ public class WindowPresenter : MonoBehaviour
     }
 
     // トランジション
-    IObservable<T> MoveTransition<T>(string screenType, UnityAction<T> action = null)
+    IObservable<T> MoveTransition<T>(string screenType, Action<T> action = null)
         where T : ScreenPresenter
     {
         var subject = new AsyncSubject<T>();

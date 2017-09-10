@@ -14,10 +14,4 @@ public class RedMenuScreen : ScreenPresenter
         return base.Initialize();
     }
 
-    public override void OnEndMoveIn()
-    {
-        base.OnEndMoveIn();
-    }
-
-
 }
