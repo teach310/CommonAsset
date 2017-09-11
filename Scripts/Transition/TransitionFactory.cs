@@ -11,24 +11,24 @@ namespace Common.Transition
     public static class TransitionFactory
     {
         static TransitionNull transitionNull;
-        static TransitionNull TransitionNull{
-            get{
-                if(transitionNull == null)
-                    transitionNull = new TransitionNull();
+
+        static TransitionNull TransitionNull {
+            get {
+                if (transitionNull == null)
+                    transitionNull = new TransitionNull ();
                 return transitionNull;
             }
         }
 
-        public static ITransition Create(TransitionStyle style)
+        public static ITransition Create (TransitionStyle style)
         {
-            switch (style)
-            {
-                //case TransitionStyle.Fade:
-                    //return 
-                case TransitionStyle.Null:
-                    return TransitionNull;
-                default:
-                    return TransitionNull;
+            switch (style) {
+            case TransitionStyle.Fade:
+                return new TransitionFade ();
+            case TransitionStyle.Null:
+                return TransitionNull;
+            default:
+                return TransitionNull;
             }
         }
     }

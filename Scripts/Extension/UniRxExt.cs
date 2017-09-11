@@ -27,8 +27,10 @@ public static class UniRxExt{
     public static IObservable<Unit> OnCompleteAsObservable(this Tween tween)
     {
         var subject = new AsyncSubject<Unit>();
-        subject.OnNext(Unit.Default);
-        tween.OnComplete(subject.OnCompleted);
+        tween.OnComplete(()=>{
+            subject.OnNext(Unit.Default);
+            subject.OnCompleted();
+        });
         return subject;
     }
 }

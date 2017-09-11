@@ -7,7 +7,8 @@ public class ScreenPresenter : MonoBehaviour {
 
 	// 初期化
 	public virtual IObservable<Unit> Initialize(){
-        //Debug.Log ("initialize");
+//        Debug.Log ("initialize" + Time.frameCount);
+
         return Observable.ReturnUnit();
 		// Modelの生成
 		// Viewの初期化
@@ -18,7 +19,6 @@ public class ScreenPresenter : MonoBehaviour {
 
 	// OnMoveInの直前
 	public virtual IObservable<Unit> OnBeforeMoveIn(){
-        //Debug.Log ("onBeforeMoveIn");
         return Observable.ReturnUnit();
 	}
 

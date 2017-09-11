@@ -75,16 +75,16 @@ public class WindowPresenter : MonoBehaviour
 
 
     // スクリーン遷移
-    public IObservable<T> MoveScreen<T> (Action<T> action = null)
+    public IObservable<T> MoveScreen<T> (TransitionStyle transitionStyle = TransitionStyle.Null, Action<T> action = null)
         where T : ScreenPresenter
     {
-        return MoveScreen (typeof(T).Name, action: action);
+        return MoveScreen (typeof(T).Name, transitionStyle, action: action);
     }
 
     /// <summary>
     /// スクリーン遷移　型安全でないためここから呼ぶのは非推奨
     /// </summary>
-    public IObservable<T> MoveScreen<T> (string screenType, Const.TransitionStyle transitionStyle = Const.TransitionStyle.Null, Action<T> action = null)
+    public IObservable<T> MoveScreen<T> (string screenType, TransitionStyle transitionStyle = TransitionStyle.Null, Action<T> action = null)
         where T : ScreenPresenter
     {
         OnScreenWillChange ();
@@ -97,11 +97,10 @@ public class WindowPresenter : MonoBehaviour
 
         // 生成
         var transition = MoveTransition (screenType, transitionStyle, action);
-        transition.Subscribe(
+        transition.Subscribe (
             x => CurrentScreen = x,
-            () =>
-            {
-                OnScreenChanged();
+            () => {
+                OnScreenChanged ();
                 //// 前のスクリーンを非表示にする
                 //if (previewScreen != null)
                 //{
@@ -180,30 +179,27 @@ public class WindowPresenter : MonoBehaviour
     IObservable<T> MoveTransition<T> (string screenType, TransitionStyle transitionStyle, Action<T> action = null)
             where T : ScreenPresenter
     {
+        
         var subject = new AsyncSubject<T> ();
         GameObject obj = Instantiate (ResourcesManager.Instance.GetScreen (screenType), screenContainer) as GameObject;
         var canvas = obj.GetComponent<Canvas> ();
         T screen = obj.GetComponent<T> ();
         var effect = TransitionFactory.Create (transitionStyle);
     
-        Action setParam = () => {
-            if (action != null) 
-                action(screen);
+        Action<Unit> setParam = _ => {
+            if (action != null)
+                action (screen);
         };
 
         canvas.enabled = false; // 生成して非表示にしておく
-        Observable.Concat(
-            effect.AnimateIn(),
-            screen.Initialize(),
-            Observable.Start(setParam),
-            screen.OnBeforeMoveIn (),
-            UniRxTools.ObservableAction(()=> canvas.enabled = true), // アニメーション直前に表示
-            Observable.WhenAll(
-                effect.AnimateOut(),
-                screen.OnMoveIn ()
-            ),
-            screen.OnEndMoveIn()
-        ).Subscribe (_ => {}, () => {
+        effect.AnimateIn ()
+            .SelectMany (_=>screen.Initialize ())
+            .Do (setParam)
+            .SelectMany (_=>screen.OnBeforeMoveIn ())
+            .Do (_ => canvas.enabled = true)
+            .SelectMany (_=> Observable.WhenAll (effect.AnimateOut (), screen.OnMoveIn ()))
+            .SelectMany (_=>screen.OnEndMoveIn ())
+            .Subscribe (_ => {}, () => {
             subject.OnNext (screen);
             subject.OnCompleted ();
         });

@@ -9,6 +9,8 @@ public class ScreenChangeButton : MonoBehaviour
     [SerializeField] WindowPresenter window;
     [SerializeField] ScreenPresenter screen;
 
+    [SerializeField] Const.TransitionStyle transitionStyle;
+
     void Awake()
     {
         this.GetComponent<Button>().onClick.AddListener(ChangeScreen);
@@ -16,8 +18,8 @@ public class ScreenChangeButton : MonoBehaviour
 
     public void ChangeScreen() {
         if (goRoot)
-            ScenePresenter.Instance.GoRootScreen(window.name);
+            ScenePresenter.Instance.GoRootScreen(window.name, transitionStyle);
         else
-            ScenePresenter.Instance.MoveScreen(screen.name);
+            ScenePresenter.Instance.MoveScreen(screen.name, transitionStyle);
     }
 }

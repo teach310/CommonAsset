@@ -96,9 +96,12 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         return openSubject;
     }
 
-    public IObservable<ScreenPresenter> GoRootScreen (string windowName)
+    /// <summary>
+    /// ScreenChangeButton用
+    /// </summary>
+    public IObservable<ScreenPresenter> GoRootScreen (string windowName,TransitionStyle transitionStyle = TransitionStyle.Null)
     {
-        return GoRootScreen<ScreenPresenter> (windowName);
+        return GoRootScreen<ScreenPresenter> (windowName, transitionStyle);
     }
 
     // キャッシュを削除してルートへ飛ぶ
@@ -148,7 +151,7 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         // screen生成
         if (CurrentWindow != null) {
             if (CurrentWindow.GetType ().Name == windowName) {
-                return CurrentWindow.MoveScreen<T> (screenName);
+                return CurrentWindow.MoveScreen<T> (screenName, transitionStyle);
             }
         }
         var subject = new AsyncSubject<T> ();

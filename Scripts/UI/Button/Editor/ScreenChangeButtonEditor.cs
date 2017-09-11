@@ -9,12 +9,14 @@ public class ScreenChangeButtonEditor : Editor {
     SerializedProperty goRoot;
     SerializedProperty window;
     SerializedProperty screen;
+    SerializedProperty transitionStyle;
 
     void OnEnable()
     {
         goRoot = serializedObject.FindProperty("goRoot");
         window = serializedObject.FindProperty("window");
         screen = serializedObject.FindProperty("screen");
+        transitionStyle = serializedObject.FindProperty ("transitionStyle");
     }
 
     public override void OnInspectorGUI()
@@ -27,6 +29,7 @@ public class ScreenChangeButtonEditor : Editor {
         }else{
             EditorGUILayout.PropertyField(screen);
         }
+        EditorGUILayout.PropertyField (transitionStyle);
         serializedObject.ApplyModifiedProperties();
     }
 }
