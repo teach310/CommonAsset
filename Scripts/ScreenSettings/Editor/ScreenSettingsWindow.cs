@@ -1,7 +1,8 @@
-﻿﻿using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 using UnityEditor.IMGUI.Controls;
 using System.IO;
+using System;
 
 public class ScreenSettingsWindow : EditorWindow
 {
@@ -84,8 +85,13 @@ public class ScreenSettingsWindow : EditorWindow
     }
 
     void ToolBar() {
-        if (GUILayout.Button("ExportScript")){
-            ExportScreenSettings();
+        using (new EditorGUILayout.HorizontalScope ()) {
+            if (GUILayout.Button ("ExportScript")) {
+                ExportScreenSettings ();
+            }
+            if (GUILayout.Button ("CreatePrefabs")) {
+                CreatePrefabs ();
+            }
         }
     }
 
@@ -106,6 +112,42 @@ public class ScreenSettingsWindow : EditorWindow
 		{
             ScriptCreater.Create("ScreenTemplate", string.Format("{0}/{1}.cs", screenDir, item.name));
 		}
+        AssetDatabase.Refresh ();
+    }
 
+    void CreatePrefabs(){
+        string settingsPath = AssetDatabase.GetAssetPath(settings);
+        string dir = Path.GetDirectoryName(Path.GetDirectoryName(settingsPath)) + "/Resources/Prefabs";
+
+
+        string windowDir = dir + "/Window";
+        foreach (var item in settings.windows) {
+            var type = Utils.GetType(item.name);
+            if(type == null){
+                Debug.LogError(item.name +" is null");
+                continue;
+            }
+            PrefabCreater.Create ("WindowTemplate", string.Format("{0}/{1}.prefab", windowDir, item.name), GetPrefabSetter(item.name, type));
+        }
+
+        string screenDir = dir + "/Screen";
+        foreach (var item in settings.screens) {
+            var type = Utils.GetType(item.name);
+            if(type == null){
+                Debug.LogError(item.name +" is null");
+                continue;
+            }
+            PrefabCreater.Create ("ScreenTemplate", string.Format("{0}/{1}.prefab", screenDir, item.name), GetPrefabSetter(item.name, type));
+        }
+
+        AssetDatabase.Refresh ();
+    }
+
+
+    Action<GameObject> GetPrefabSetter(string name, Type type){
+        return (GameObject go) => {
+            go.name = name;
+            go.AddComponent(type);
+        };
     }
 }

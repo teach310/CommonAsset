@@ -15,7 +15,7 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
     public static WindowPresenter CurrentWindow;
     public WindowPresenter initialWindow;
     public ScreenSettings screenSettings;
-    public Transform uiRoot;
+    public Transform windowContainer;
 
     void Start ()
     {
@@ -76,7 +76,7 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         }
 
         // 生成処理
-        GameObject obj = Instantiate (ResourcesManager.Instance.GetWindow (name), uiRoot) as GameObject;
+        GameObject obj = Instantiate (ResourcesManager.Instance.GetWindow (name), windowContainer) as GameObject;
         T window = obj.GetComponent<T> ();
         CurrentWindow = window;
 
