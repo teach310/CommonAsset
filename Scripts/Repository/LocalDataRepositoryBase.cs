@@ -4,7 +4,7 @@ using UnityEngine;
 using Common.Data;
 
 public class LocalDataRepositoryBase<T>{
-    
+
     public static T Load(){
          return FileService.Load<T>();
     }

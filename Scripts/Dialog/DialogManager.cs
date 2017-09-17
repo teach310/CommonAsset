@@ -56,8 +56,7 @@ public class DialogManager : SingletonMonoBehaviour<DialogManager>
         Instance.StartCoroutine(OpenCoroutine(typeof(T).Name, action));
     }
 
-
-
+    // SelectManyに変更することで3フレーム早くなる = 0.1秒
     static IEnumerator OpenCoroutine<T>(string dialogName, UnityAction<T> action = null)
         where T:DialogPresenter
     {
@@ -66,8 +65,9 @@ public class DialogManager : SingletonMonoBehaviour<DialogManager>
         T dialog = obj.GetComponent<T>();
         var canvas = dialog.GetComponent<Canvas>();
         canvas.enabled = false;
-        canvas.overrideSorting = true;
-        canvas.sortingOrder = 100;
+        // 一旦削除
+//        canvas.overrideSorting = true;
+//        canvas.sortingOrder = 200;
         yield return dialog.Initialize().ToYieldInstruction();
         if(action != null)
             action(dialog);
