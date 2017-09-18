@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
-
+using UniRx;
 
 public static class TweenEx{
 
@@ -14,4 +14,15 @@ public static class TweenEx{
 		sequence.Join(tran.DOScaleY(endValue.y, duration).SetEase(easeY));
 		return sequence;
 	}
+
+    // TweenをObservableにする
+    public static IObservable<Unit> OnCompleteAsObservable(this Tween tween)
+    {
+        var subject = new AsyncSubject<Unit>();
+        tween.OnComplete(()=>{
+            subject.OnNext(Unit.Default);
+            subject.OnCompleted();
+        });
+        return subject;
+    }
 }

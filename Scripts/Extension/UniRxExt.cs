@@ -3,16 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UniRx;
-using DG.Tweening;
 using System;
-
-public static class UniRxTools{
-    // メインスレッドで関数を実行し,IObservable<Unit>を返す関数
-    public static IObservable<Unit> ObservableAction(Action action){
-        action ();
-        return Observable.ReturnUnit ();
-    }
-}
 
 public static class UniRxExt{
 
@@ -21,16 +12,4 @@ public static class UniRxExt{
 		}, () => action ());
 		return ret;
 	}
-
-
-    // TweenをObservableにする
-    public static IObservable<Unit> OnCompleteAsObservable(this Tween tween)
-    {
-        var subject = new AsyncSubject<Unit>();
-        tween.OnComplete(()=>{
-            subject.OnNext(Unit.Default);
-            subject.OnCompleted();
-        });
-        return subject;
-    }
 }
