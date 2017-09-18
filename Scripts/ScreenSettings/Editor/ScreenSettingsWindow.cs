@@ -74,7 +74,7 @@ public class ScreenSettingsWindow : EditorWindow
         if(treeView == null){
             InitTreeView();
         }
-
+            
         GUILayout.Space(5f);
         ToolBar();
         GUILayout.Space(3f);
