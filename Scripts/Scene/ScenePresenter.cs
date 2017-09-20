@@ -80,15 +80,15 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         T window = obj.GetComponent<T> ();
         CurrentWindow = window;
 
-        var initSubject = window.Initialize ();
-        if (action != null) {
-            initSubject.Subscribe (_ => action (window));
-        }
-        Observable.Concat (
-            initSubject,
-            window.OnBeforeOpen (),
-            window.OnOpen ()
-        ).Subscribe (_ => {
+        window.Initialize ()
+            .Do (_ => {
+                if(action != null)
+                    action (window);
+            })
+            .SelectMany (_ => window.OnBeforeOpen ())
+            .SelectMany (_ => window.OnOpen ())
+            .Subscribe (_ => {
+        }, () => {
             openSubject.OnNext (window);
             openSubject.OnCompleted ();
         });
@@ -198,15 +198,16 @@ public class ScenePresenter : SingletonMonoBehaviour<ScenePresenter>
         newWindow.gameObject.SetActive (true);
         var subject = new AsyncSubject<WindowPresenter> ();
         CurrentWindow.OnCloseOut ();
-        Observable.Concat (
-            newWindow.OnBeforeCloseIn (),
-            newWindow.OnCloseIn ()
-        ).OnComplete (() => {
-            Destroy (CurrentWindow.gameObject);
-            CurrentWindow = newWindow;
-            subject.OnNext (newWindow);
-            subject.OnCompleted ();
+        newWindow.OnBeforeCloseIn ()
+            .SelectMany (_ => newWindow.OnCloseIn ())
+            .Subscribe (_ => {
+        }, () => {
+                Destroy (CurrentWindow.gameObject);
+                CurrentWindow = newWindow;
+                subject.OnNext (newWindow);
+                subject.OnCompleted ();
         });
+        
         return subject;
     }
 

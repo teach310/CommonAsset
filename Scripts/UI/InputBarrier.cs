@@ -38,7 +38,7 @@ public class InputBarrier : SingletonMonoBehaviour<InputBarrier> {
         base.Awake();
         if(requests.Count == 0)
             InActivateBarrier();
-        DontDestroyOnLoad(this.gameObject);
+        //DontDestroyOnLoad(this.gameObject);
     }
 
     static void ActivateBarrier(){

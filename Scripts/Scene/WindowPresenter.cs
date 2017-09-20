@@ -128,14 +128,14 @@ public class WindowPresenter : MonoBehaviour
     {
         next.gameObject.SetActive (true);
         var subject = new AsyncSubject<ScreenPresenter> ();
-        Observable.Concat (
-            preview.OnBackOut (),
-            next.OnBackIn ()
-        ).OnComplete (() => {
-            Destroy (preview.gameObject);
-            subject.OnNext (next);
-            subject.OnCompleted ();
-        });
+        preview.OnBackOut ()
+            .SelectMany (_ => next.OnBackIn ())
+            .Subscribe (_ => {
+            }, () => {
+                Destroy (preview.gameObject);
+                subject.OnNext (next);
+                subject.OnCompleted ();
+            });
 
         return subject;
 
