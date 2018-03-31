@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Managements : MonoBehaviour {
+public class Managements : SingletonMonoBehaviour<Managements> {
 
-	void Awake(){
-		DontDestroyOnLoad (this.gameObject);
-	}
 }

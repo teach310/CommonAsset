@@ -12,6 +12,6 @@ public class ScreenSettings : ScriptableObject
     public List<ScreenEntity> screens = new List<ScreenEntity>();
 
     public ScreenSettings(){
-        windows.Add (new WindowEntity (1, "NewWindow"));
+        windows.Add (new WindowEntity (100001, "NewWindow"));
     }
 }

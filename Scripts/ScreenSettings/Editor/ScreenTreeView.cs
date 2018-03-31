@@ -122,7 +122,7 @@ public class ScreenTreeView : TreeView
         var item = this.GetRows().First(x => x.id == selections.First());
 
         int index = item.parent.children.IndexOf(item) + 1;
-        bool isWindow = (item.id / 100 == 0);
+		bool isWindow = item.parent.id == rootItem.id;
         string name = isWindow ? "Window" : "Screen";
         var newItem = new TreeViewItem(-1, -1, name);
         item.parent.InsertChild(index, newItem);
@@ -188,7 +188,8 @@ public class ScreenTreeView : TreeView
         var windowItems = rootItem.children;
         for (int i = 0; i < windowItems.Count(); i++)
         {
-            windowItems[i].id = i + 1;
+			// window のid は 100001 + i
+            windowItems[i].id = i + 100001;
             if (!windowItems[i].hasChildren)
                 continue;
             var screenItems = windowItems[i].children;

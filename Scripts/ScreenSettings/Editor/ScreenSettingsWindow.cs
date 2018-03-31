@@ -6,11 +6,14 @@ using System;
 
 public class ScreenSettingsWindow : EditorWindow
 {
-    
+	static ScreenSettingsWindow window;
     [MenuItem("Tools/ScreenSettingsWindow")]
     public static void Open()
     {
-        GetWindow<ScreenSettingsWindow>("ScreenSettings");
+		if (window == null)
+			window = CreateInstance<ScreenSettingsWindow> ();
+		window.ShowUtility ();
+		window.titleContent = new GUIContent ("Screen");
     }
 
     ScreenSettings settings;
@@ -34,6 +37,7 @@ public class ScreenSettingsWindow : EditorWindow
     void OnEnable()
     {
         Undo.undoRedoPerformed += OnUndoRedoPerformed;
+		OnSelectionChange ();
     }
 
     private void OnDisable()

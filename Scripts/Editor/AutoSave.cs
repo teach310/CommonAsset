@@ -1,8 +1,9 @@
-﻿﻿using System.Collections;
-using UnityEditor;
+﻿using System.Collections;
+
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using System.IO;
+using UnityEditor;
 
 [InitializeOnLoad]
 public class AutoSave
@@ -15,7 +16,7 @@ public class AutoSave
 	static AutoSave()
 	{
 		IsManualSave = true;
-		EditorApplication.playmodeStateChanged += () =>
+		EditorApplication.playModeStateChanged += x =>
 		{
 			if (IsAutoSave && !EditorApplication.isPlaying && EditorApplication.isPlayingOrWillChangePlaymode)
 			{
