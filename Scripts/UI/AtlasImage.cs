@@ -15,7 +15,7 @@ public class AtlasImage : Image
 			m_SpriteName = value; 
 
 			if (atlas != null) {
-				this.sprite = atlas.GetSprite (spriteName);
+				this.sprite = atlas.GetSprite (m_SpriteName);
 			}
 		}
 	}
