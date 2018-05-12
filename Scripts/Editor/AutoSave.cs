@@ -55,7 +55,7 @@ public class AutoSave
 			}
 		};
 
-		EditorApplication.hierarchyWindowChanged += () =>
+		EditorApplication.hierarchyChanged += () =>
 		{
 			if (!EditorApplication.isPlaying)
 				isChangedHierarchy = true;

@@ -5,6 +5,7 @@ using UniRx;
 using Common.Tweening;
 using System.Linq;
 using UnityEngine.UI;
+using System;
 
 public class MessageBox : DialogPresenter
 {
